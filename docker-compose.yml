@@ -1,17 +1,37 @@
 services:
+  # Downloads the website from GitHub into a shared volume, then exits
+  site-files:
+    image: alpine/git:latest
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - |
+        rm -rf /srv/* /srv/.[!.]* 2>/dev/null
+        git clone --depth 1 --branch "$${SITE_BRANCH}" "$${SITE_REPO}" /srv
+    environment:
+      SITE_REPO: ${SITE_REPO:-https://github.com/shahid25june/dratiya.git}
+      SITE_BRANCH: ${SITE_BRANCH:-main}
+    volumes:
+      - site:/srv
+    restart: "no"
+
+  # Serves the website; the server's main Caddy container proxies dratiya.doctolin.com to it
   web:
-    build:
-      # Git repository holding this website (Dockerfile at its root). Format: <repo-url>#<branch>
-      # For a private repository use: https://<user>:<token>@github.com/<user>/<repo>.git#main
-      context: ${SITE_REPO:-https://github.com/shahid25june/dratiya.git#main}
-    image: rns-fertility-clinic:latest
+    image: caddy:2-alpine
     container_name: rns-fertility-clinic
     restart: unless-stopped
-    # No published ports: the server's Caddy container reaches this over the shared network
+    command: caddy run --config /srv/Caddyfile --adapter caddyfile
+    depends_on:
+      site-files:
+        condition: service_completed_successfully
+    volumes:
+      - site:/srv:ro
     expose:
       - "80"
     networks:
       - proxy
+
+volumes:
+  site:
 
 networks:
   proxy:

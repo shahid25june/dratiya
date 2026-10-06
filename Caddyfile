@@ -4,7 +4,9 @@
 	encode zstd gzip
 
 	try_files {path} {path}.html
-	file_server
+	file_server {
+		hide .git Caddyfile Caddyfile.server-snippet docker-compose.yml
+	}
 
 	header {
 		X-Content-Type-Options "nosniff"

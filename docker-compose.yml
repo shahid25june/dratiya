@@ -3,7 +3,7 @@ services:
     build:
       # Git repository holding this website (Dockerfile at its root). Format: <repo-url>#<branch>
       # For a private repository use: https://<user>:<token>@github.com/<user>/<repo>.git#main
-      context: ${SITE_REPO:-https://github.com/OWNER/REPO.git#main}
+      context: ${SITE_REPO:-https://github.com/shahid25june/dratiya.git#main}
     image: rns-fertility-clinic:latest
     container_name: rns-fertility-clinic
     restart: unless-stopped

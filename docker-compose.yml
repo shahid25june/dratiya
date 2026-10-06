@@ -1,0 +1,20 @@
+services:
+  web:
+    build:
+      # Git repository holding this website (Dockerfile at its root). Format: <repo-url>#<branch>
+      # For a private repository use: https://<user>:<token>@github.com/<user>/<repo>.git#main
+      context: ${SITE_REPO:-https://github.com/OWNER/REPO.git#main}
+    image: rns-fertility-clinic:latest
+    container_name: rns-fertility-clinic
+    restart: unless-stopped
+    # No published ports: the server's Caddy container reaches this over the shared network
+    expose:
+      - "80"
+    networks:
+      - proxy
+
+networks:
+  proxy:
+    # The Docker network the server's Caddy container is attached to
+    external: true
+    name: ${CADDY_NETWORK:-caddy}

@@ -1,0 +1,7 @@
+# Add this block to the Caddyfile of the Caddy container already running on the server,
+# then reload it: docker exec <caddy-container> caddy reload --config /etc/caddy/Caddyfile
+
+dratiya.doctolin.com {
+	reverse_proxy rns-fertility-clinic:80
+	header Strict-Transport-Security "max-age=31536000"
+}
